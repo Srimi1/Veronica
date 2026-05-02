@@ -1,0 +1,4 @@
+[submodule "backend/project-friday"]
+	path = backend/project-friday
+	url = https://github.com/Srimi1/Project_Friday.git
+	branch = main
