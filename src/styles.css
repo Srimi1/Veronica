@@ -1,0 +1,252 @@
+/* ============================================
+   Veronica — Cinematic Holographic Widget
+   Friday Core visual layer · Project Friday phases
+   ============================================ */
+
+/* ---- Reset — critical for transparency ---- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent !important;
+  -webkit-app-region: no-drag; /* We handle drag manually */
+}
+
+body {
+  background: transparent;
+  font-family: 'SF Pro Display', -apple-system, 'Inter', BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ---- Main app container — circular clip ---- */
+#app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: transparent;
+  border-radius: 50%; /* Circular clip */
+  overflow: hidden;
+  /* Subtle entry animation */
+  animation: widgetEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes widgetEntry {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---- Canvas layer ---- */
+#friday-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* ---- Center text overlay ---- */
+#center-text {
+  display: none;
+}
+
+#main-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 10px rgba(220, 20, 60, 0.6),
+    0 0 20px rgba(220, 20, 60, 0.3),
+    0 0 40px rgba(220, 20, 60, 0.1);
+  animation: textPulse 3s ease-in-out infinite;
+}
+
+#status-text {
+  font-size: 8px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  min-height: 10px;
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* ---- State-specific status text colors ---- */
+#app[data-state="IDLE"] #status-text {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#app[data-state="LISTENING"] #status-text {
+  color: rgba(220, 20, 60, 0.85);
+  animation: textPulse 1.2s ease-in-out infinite;
+}
+
+#app[data-state="THINKING"] #status-text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+#app[data-state="SPEAKING"] #status-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+#app[data-state="ALERT"] #status-text {
+  color: rgba(255, 0, 64, 0.9);
+  animation: textPulse 0.6s ease-in-out infinite;
+}
+
+/* ---- Lock indicator ---- */
+#lock-indicator {
+  position: absolute;
+  top: 55px;
+  right: 55px;
+  z-index: 20;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+#lock-indicator:hover {
+  opacity: 0.85;
+}
+
+#lock-indicator svg {
+  width: 10px;
+  height: 10px;
+  fill: rgba(220, 20, 60, 0.7);
+  filter: drop-shadow(0 0 3px rgba(220, 20, 60, 0.4));
+}
+
+/* ---- Context menu ---- */
+#context-menu {
+  position: absolute;
+  z-index: 100;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 20, 60, 0.3);
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 160px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(220, 20, 60, 0.1);
+  animation: menuEntry 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes menuEntry {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#context-menu .menu-item {
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+#context-menu .menu-item:hover {
+  background: rgba(220, 20, 60, 0.25);
+  color: #FFFFFF;
+}
+
+#context-menu .menu-item:active {
+  background: rgba(220, 20, 60, 0.4);
+}
+
+#context-menu .menu-item.active-state {
+  background: rgba(220, 20, 60, 0.15);
+  color: #FF4D6D;
+}
+
+#context-menu .menu-item.active-state::before {
+  content: "● ";
+  font-size: 8px;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+#context-menu .menu-separator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 4px 0;
+}
+
+#context-menu .menu-item.disabled {
+  color: rgba(255, 255, 255, 0.3);
+  cursor: default;
+}
+
+#context-menu .menu-item.disabled:hover {
+  background: transparent;
+}
+
+/* ---- Drag cursor states ---- */
+#app:hover {
+  cursor: grab;
+}
+
+#app.dragging {
+  cursor: grabbing !important;
+  opacity: 0.9;
+}
+
+#app.locked:hover {
+  cursor: default;
+}
+
+#app.locked {
+  cursor: default;
+}
+
+/* ---- Scanline overlay effect (subtle) ---- */
+#app::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.4;
+}
